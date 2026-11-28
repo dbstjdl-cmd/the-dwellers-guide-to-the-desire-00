@@ -34,11 +34,13 @@
     '.statement-sticky.tl-dim .tl-layers{opacity:.22}' +
     'html.is-locked .tl-halftone{opacity:0}' +
     /* "ENTER THE ARCHIVE →": same box as ABOUT THE PROJECT, bottom centre, shows once a plan has surfaced */
-    '.tl-go{position:absolute;left:50%;bottom:calc(var(--trk,1) * 96px);transform:translate(-50%,8px);z-index:6;pointer-events:none;opacity:0;' +
-    'transition:opacity .6s ease .35s,transform .6s ease .35s;cursor:pointer;background:rgba(255,255,255,.55);border:1px solid var(--ink,#131313);color:var(--ink,#131313);' +
-    'font:700 calc(var(--trk,1) * 12px)/1 var(--f-g,"Inter Tight",sans-serif);letter-spacing:.08em;padding:calc(var(--trk,1) * 12px) calc(var(--trk,1) * 18px)}' +
-    '.tl-go.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}' +
-    '.tl-go:hover,.tl-go:focus-visible{background:var(--ink,#131313);color:#fff;outline:none}' +
+    '.tl-go{position:absolute;left:50%;bottom:calc(var(--trk,1) * 100px);transform:translate(-50%,6px);z-index:6;pointer-events:none;opacity:0;' +
+    'transition:opacity .6s ease .35s,transform .6s ease .35s;cursor:pointer;background:none;border:0;color:#fff;padding:12px 16px;' +
+    'font:400 calc(var(--trk,1) * 10.5px)/1 "IBM Plex Mono",ui-monospace,monospace;letter-spacing:.18em;text-transform:uppercase}' +
+    /* same voice as "CLICK PLAN TO CONTINUE" on the intro, in white, with its slow pulse */
+    '.tl-go.on{transform:translate(-50%,0);pointer-events:auto;opacity:1;animation:tl-go-pulse 1.6s ease-in-out .9s infinite}' +
+    '@keyframes tl-go-pulse{0%,100%{opacity:1}50%{opacity:.35}}' +
+    '.tl-go:hover,.tl-go:focus-visible{animation:none;opacity:1;outline:none;text-decoration:underline;text-underline-offset:4px}' +
     'html.is-locked .tl-go{opacity:0;pointer-events:none}';
   document.head.appendChild(css);
 
@@ -193,7 +195,7 @@
   // ── the way on: scrolling stops at the end of this screen; once a plan has surfaced,
   //    "ENTER THE ARCHIVE →" appears at the bottom and takes you on to the archive ──
   var goBtn = document.createElement('button');
-  goBtn.type = 'button'; goBtn.className = 'tl-go'; goBtn.textContent = 'ENTER THE ARCHIVE \u2192';
+  goBtn.type = 'button'; goBtn.className = 'tl-go'; goBtn.textContent = 'enter the archive \u2192';
   stk.appendChild(goBtn);
   var unlocked = false;
   // stop where this screen has fully faded in and before scrolling starts taking keywords away (trend.js: progress 0 at one screen in)
