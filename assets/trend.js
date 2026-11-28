@@ -103,6 +103,8 @@
       // live queries stay clear of the HUD frame; faded past searches may drift behind the glass
       var hud = sec.querySelector('.tr-hud');
       if (hud) { var hr = hud.getBoundingClientRect(), sr0 = stage.getBoundingClientRect(), hp = fs * 0.6; placed.push({ x: hr.left - sr0.left - hp - 40, y: hr.top - sr0.top - hp, w: hr.width + hp * 2 + 80, h: hr.height + hp * 2, liveOnly: true }); }
+      // keep the background diagram's titles clear (assets/trend-layers.js)
+      if (window.__tlAvoid) window.__tlAvoid(W, H).forEach(function (q) { q.liveOnly = true; placed.push(q); });
       function tryPlace(c, y, past) {
         if (drive && !past && (qn >= Q.length || fadeOf(qn) <= 0)) return 0;
         var qi = past ? pn % P.length : order[qn % order.length];
@@ -975,7 +977,7 @@ document.addEventListener('click', function (e) {
   var field = sec.querySelector('.tr-field'), bar = sec.querySelector('.tr-search');
   if (!field || !bar) return;
   var out = bar.querySelector('.ts-q'), ic = bar.querySelector('.ts-ic');
-  var drag = null, justDragged = false, holdT = 0, heldPlan = -1, typeT = 0;
+  var drag = null, justDragged = false, holdT = 0, heldPlan = -1, typeT = 0, shownPlan = -1;
   // hint under the bar, and a cursor tag that says the chips can be picked up
   var hint = sec.querySelector('.tr-hud .hd-c'), coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
   if (hint && !coarse) { hint.textContent = 'DRAG A QUERY HERE'; hint.classList.add('hd-hint'); }
@@ -1027,6 +1029,7 @@ document.addEventListener('click', function (e) {
   }
   function put(q, plan) {
     clearTimeout(holdT); clearTimeout(typeT);
+    if (shownPlan >= 0 && window.__tlClear) window.__tlClear(); shownPlan = -1;
     heldPlan = plan; bar.classList.remove('is-desire'); bar.classList.add('is-held', 'is-typing');
     var st = (window.__tsSteps || function (w) { return [w]; })(q), i = 0;
     out.textContent = '';
@@ -1056,15 +1059,28 @@ document.addEventListener('click', function (e) {
   }
   function release() {
     clearTimeout(holdT); clearTimeout(typeT); heldPlan = -1;
+    if (shownPlan >= 0 && window.__tlClear) window.__tlClear(); shownPlan = -1;
     bar.classList.remove('is-filled', 'is-desire'); out.textContent = '';
     bar.classList.remove('is-held');
   }
   function go() {
     if (heldPlan < 0 || !bar.classList.contains('is-filled')) return;
+    // first search: the plan surfaces behind the chips as a white halftone (diagram fades back); search again to open it
+    if (window.__tlShowPlan && shownPlan !== heldPlan) {
+      shownPlan = heldPlan; window.__tlShowPlan(heldPlan);
+      clearTimeout(holdT); holdT = setTimeout(release, 25000); return;
+    }
     var i = heldPlan; release();
     if (typeof window.__openPlan === 'function') { document.documentElement.dataset.from = 'trend'; window.__openPlan(i); }
   }
   if (ic) ic.addEventListener('click', go);
+  // while a plan is shown as halftone, one click on the empty background puts it away
+  // (the search screen lets clicks fall through to the page behind it, so listen on the whole document)
+  document.addEventListener('click', function (e) {
+    if (shownPlan < 0 || justDragged || document.documentElement.classList.contains('is-locked')) return;
+    if (e.target.closest && e.target.closest('.tr-search, .tr-e, a, button')) return;
+    release();
+  });
   bar.addEventListener('click', function (e) { if (!ic || !ic.contains(e.target)) go(); });
   window.addEventListener('keydown', function (e) { if (e.key === 'Enter' && bar.classList.contains('is-filled')) go(); else if (e.key === 'Escape' && bar.classList.contains('is-held')) release(); });
 })();
