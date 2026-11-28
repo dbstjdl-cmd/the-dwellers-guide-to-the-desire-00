@@ -32,7 +32,14 @@
     '.tl-halftone.on{opacity:1}' +
     '.tl-layers{transition:opacity .9s ease}' +
     '.statement-sticky.tl-dim .tl-layers{opacity:.22}' +
-    'html.is-locked .tl-halftone{opacity:0}';
+    'html.is-locked .tl-halftone{opacity:0}' +
+    /* "ENTER THE ARCHIVE →": same box as ABOUT THE PROJECT, bottom centre, shows once a plan has surfaced */
+    '.tl-go{position:absolute;left:50%;bottom:calc(var(--trk,1) * 96px);transform:translate(-50%,8px);z-index:6;pointer-events:none;opacity:0;' +
+    'transition:opacity .6s ease .35s,transform .6s ease .35s;cursor:pointer;background:rgba(255,255,255,.55);border:1px solid var(--ink,#131313);color:var(--ink,#131313);' +
+    'font:700 calc(var(--trk,1) * 12px)/1 var(--f-g,"Inter Tight",sans-serif);letter-spacing:.08em;padding:calc(var(--trk,1) * 12px) calc(var(--trk,1) * 18px)}' +
+    '.tl-go.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}' +
+    '.tl-go:hover,.tl-go:focus-visible{background:var(--ink,#131313);color:#fff;outline:none}' +
+    'html.is-locked .tl-go{opacity:0;pointer-events:none}';
   document.head.appendChild(css);
 
   var seed = 3;
@@ -178,10 +185,41 @@
   window.__tlShowPlan = function (i) {
     var p = (window.__extraPlans || [])[i]; if (!p || !p.image) return;
     htPlan = i; var im = new Image();
-    im.onload = function () { if (htPlan !== i) return; htImg = im; halftone(); ht.classList.add('on'); stk.classList.add('tl-dim'); };
+    im.onload = function () { if (htPlan !== i) return; htImg = im; halftone(); ht.classList.add('on'); stk.classList.add('tl-dim'); goBtn.classList.add('on'); };
     im.src = p.image;
   };
-  window.__tlClear = function () { htPlan = -1; ht.classList.remove('on'); stk.classList.remove('tl-dim'); };
+  window.__tlClear = function () { htPlan = -1; ht.classList.remove('on'); stk.classList.remove('tl-dim'); goBtn.classList.remove('on'); };
+
+  // ── the way on: scrolling stops at the end of this screen; once a plan has surfaced,
+  //    "ENTER THE ARCHIVE →" appears at the bottom and takes you on to the archive ──
+  var goBtn = document.createElement('button');
+  goBtn.type = 'button'; goBtn.className = 'tl-go'; goBtn.textContent = 'ENTER THE ARCHIVE \u2192';
+  stk.appendChild(goBtn);
+  var unlocked = false;
+  // stop where this screen has fully faded in and before scrolling starts taking keywords away (trend.js: progress 0 at one screen in)
+  function endY() { var r = sec.getBoundingClientRect(); return Math.max(0, r.top + window.scrollY + window.innerHeight * 0.98); }
+  function unlock() { unlocked = true; document.documentElement.classList.add('tl-open'); }
+  if (window.scrollY > endY() + 2) unlock();                          // already past it (reload, back from a plan): don't trap
+  window.addEventListener('scroll', function () {
+    if (unlocked) return;
+    var L = endY(); if (window.scrollY > L + 1) window.scrollTo(0, L);
+  }, { passive: true });
+  window.addEventListener('wheel', function (e) {
+    if (!unlocked && e.deltaY > 0 && window.scrollY >= endY() - 1) e.preventDefault();
+  }, { passive: false });
+  window.addEventListener('keydown', function (e) {
+    if (unlocked || window.scrollY < endY() - 1) return;
+    if (['ArrowDown', 'PageDown', 'End', ' '].indexOf(e.key) >= 0 && !(e.target && /INPUT|TEXTAREA/.test(e.target.tagName))) e.preventDefault();
+  });
+  // links elsewhere on the page that jump past this screen still work
+  document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('a[href^="#"]'); if (a && a.getAttribute('href') !== '#essay') unlock(); }, true);
+  goBtn.addEventListener('click', function () {
+    unlock();
+    // land where the archive has fully taken over (it overlaps the end of this screen): 1.5 screens past its top edge
+    var cloud = document.getElementById('cloud'), top = cloud ? cloud.getBoundingClientRect().top + window.scrollY + window.innerHeight * 1.5 : endY() + window.innerHeight * 3;
+    if (window.__tsRelease) window.__tsRelease();
+    window.scrollTo({ top: top, behavior: 'smooth' });
+  });
 
   var rt = 0;
   window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { draw(); if (htPlan >= 0) halftone(); }, 150); });

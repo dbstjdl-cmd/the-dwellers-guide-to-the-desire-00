@@ -1063,6 +1063,7 @@ document.addEventListener('click', function (e) {
     bar.classList.remove('is-filled', 'is-desire'); out.textContent = '';
     bar.classList.remove('is-held');
   }
+  window.__tsRelease = function () { release(); };
   function go() {
     if (heldPlan < 0 || !bar.classList.contains('is-filled')) return;
     // first search: the plan surfaces behind the chips as a white halftone (diagram fades back); search again to open it
