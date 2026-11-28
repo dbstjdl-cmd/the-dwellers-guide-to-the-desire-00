@@ -137,21 +137,21 @@ html.ab-on .ab-win{transform:none}
 .cursor-cross:before,.cursor-cross:after{background:#fff}
 .cursor-ring{border-color:#fff}
 .cursor-coord,.cursor-tag{color:#fff}
-/* point colour — softened cyan #5CC4C4 with a glow, on the ↵/● marks and the highlight box of newly risen queries */
-.tr-e.is-new .kw:after{color:#7fd6d4;text-shadow:0 0 4px rgba(92,196,196,.95),0 0 12px rgba(92,196,196,.6),0 0 22px rgba(92,196,196,.35)}
-.tr-e.is-new .kw{background-image:linear-gradient(#5CC4C4,#5CC4C4)}
+/* point colour — softened cyan #aeaeae with a glow, on the ↵/● marks and the highlight box of newly risen queries */
+.tr-e.is-new .kw:after{color:#c3c3c3;text-shadow:0 0 4px rgba(174,174,174,.95),0 0 12px rgba(174,174,174,.6),0 0 22px rgba(174,174,174,.35)}
+.tr-e.is-new .kw{background-image:linear-gradient(#aeaeae,#aeaeae)}
 /* highlight box on newly risen queries: outline only, no fill */
 /* highlight box on newly risen queries: tinted glass, same language as the search bar */
 .tr-e.is-new .kw{background:none;position:relative;animation:none}
 .tr-e.is-new .kw:before{content:"";position:absolute;left:-.35em;right:-.35em;top:-.12em;bottom:-.12em;z-index:-1;border-radius:3px;pointer-events:none;
-  background:linear-gradient(135deg,rgba(255,255,255,.35) 0%,rgba(255,255,255,0) 55%),rgba(92,196,196,.22);
+  background:linear-gradient(135deg,rgba(255,255,255,.35) 0%,rgba(255,255,255,0) 55%),rgba(174,174,174,.22);
   -webkit-backdrop-filter:blur(3px) saturate(130%);backdrop-filter:blur(3px) saturate(130%);
   border:1px solid rgba(255,255,255,.35);
   box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
   opacity:0;animation:tr-glass 1.6s steps(1) 1 both}
 @keyframes tr-glass{0%,40%{opacity:1}20%,60%{opacity:0}}
 /* boxed (newly risen) queries take the point colour too — a deeper teal so it reads on the light sheet */
-.tr-e.is-new .kw,.tr-e.is-new .no,.tr-e.is-new .no:before,.tr-e.is-new .sub{color:#5CC4C4}
+.tr-e.is-new .kw,.tr-e.is-new .no,.tr-e.is-new .no:before,.tr-e.is-new .sub{color:#aeaeae}
 
 /* black type → white; the dark haze behind is deeper and wider so it still reads */
 .tr-bar{color:#fff}
@@ -161,14 +161,14 @@ html.ab-on .ab-win{transform:none}
   background:radial-gradient(circle,rgba(24,24,24,.62) 0,rgba(24,24,24,.46) 26%,rgba(24,24,24,.24) 50%,rgba(24,24,24,0) 74%)}
 
 /* ═════════ CYBER / HUD skin ═════════ */
-.trend{--cy:#5CC4C4;--cy2:#9fe8e4;--red:#ff4a3d}
+.trend{--cy:#aeaeae;--cy2:#d8d8d8;--red:#ff4a3d}
 /* the floor-plan paper behind shows through, inverted: plan lines glow pale on the dark sheet */
 .trend .statement-sticky{overflow:hidden;
-  background:radial-gradient(80% 70% at 50% 50%,rgba(10,40,42,.10) 0%,rgba(6,20,21,.32) 55%,rgba(3,7,7,.68) 100%);
+  background:radial-gradient(80% 70% at 50% 50%,rgba(34,34,34,.10) 0%,rgba(17,17,17,.32) 55%,rgba(6,6,6,.68) 100%);
   -webkit-backdrop-filter:invert(1) grayscale(1) brightness(1.8) contrast(1.45);backdrop-filter:invert(1) grayscale(1) brightness(1.8) contrast(1.45)}
 /* fine grid + scanlines + vignette */
 .trend .statement-sticky:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
-  background:linear-gradient(rgba(92,196,196,.05) 1px,transparent 1px) 0 0/100% 24px,linear-gradient(90deg,rgba(92,196,196,.05) 1px,transparent 1px) 0 0/24px 100%;
+  background:linear-gradient(rgba(174,174,174,.05) 1px,transparent 1px) 0 0/100% 24px,linear-gradient(90deg,rgba(174,174,174,.05) 1px,transparent 1px) 0 0/24px 100%;
   -webkit-mask:radial-gradient(60% 55% at 50% 50%,#000 20%,transparent 85%);mask:radial-gradient(60% 55% at 50% 50%,#000 20%,transparent 85%)}
 .trend .statement-sticky:after{content:"";position:absolute;inset:0;z-index:6;pointer-events:none;
   background:repeating-linear-gradient(0deg,rgba(0,0,0,.28) 0 1px,transparent 1px 3px),radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.65) 100%);
@@ -176,42 +176,42 @@ html.ab-on .ab-win{transform:none}
 @keyframes cy-flick{0%,100%{opacity:1}47%{opacity:.85}48%{opacity:1}73%{opacity:.9}74%{opacity:1}}
 /* haze = pale cyan light instead of shadow */
 .tr-glow{mix-blend-mode:screen;filter:blur(60px);width:110vmax;height:110vmax;margin:-55vmax 0 0 -55vmax;
-  background:radial-gradient(circle,rgba(150,225,220,.30) 0,rgba(110,190,190,.16) 28%,rgba(80,150,150,.06) 50%,rgba(0,0,0,0) 70%)}
+  background:radial-gradient(circle,rgba(209,209,209,.30) 0,rgba(173,173,173,.16) 28%,rgba(135,135,135,.06) 50%,rgba(0,0,0,0) 70%)}
 /* glitch streaks */
 .tr-noise{position:absolute;inset:0;z-index:0;pointer-events:none}
 .tr-noise i{position:absolute;display:block;height:var(--h);left:var(--x);width:var(--w);top:var(--y);background:linear-gradient(90deg,transparent,rgba(var(--c),var(--a)) 12%,rgba(var(--c),var(--a)) 88%,transparent);mix-blend-mode:screen}
 .tr-noise i.r{background:rgba(255,74,61,.7);height:2px!important;mix-blend-mode:normal;box-shadow:0 0 6px rgba(255,74,61,.6)}
 
 /* type: white with cyan bloom */
-.tr-bar{color:#e9fbfa;text-shadow:0 0 6px rgba(92,196,196,.55)}
-.tr-bar .dim{color:rgba(160,210,208,.5);text-shadow:none}
+.tr-bar{color:#f7f7f7;text-shadow:0 0 6px rgba(174,174,174,.55)}
+.tr-bar .dim{color:rgba(199,199,199,.5);text-shadow:none}
 .tr-bar .sq{color:var(--cy)}
-.tr-e:not(.is-past):not(.is-new){color:#eefcfb;text-shadow:0 0 5px rgba(120,220,215,.55),0 0 14px rgba(92,196,196,.25)}
-.tr-e:not(.is-past):not(.is-new) .sub{color:rgba(160,220,216,.6);text-shadow:none}
-.tr-e.is-past{color:rgba(120,165,163,.28)}
-.tr-e.is-past .sub{color:rgba(120,165,163,.2)}
+.tr-e:not(.is-past):not(.is-new){color:#f9f9f9;text-shadow:0 0 5px rgba(198,198,198,.55),0 0 14px rgba(174,174,174,.25)}
+.tr-e:not(.is-past):not(.is-new) .sub{color:rgba(207,207,207,.6);text-shadow:none}
+.tr-e.is-past{color:rgba(155,155,155,.28)}
+.tr-e.is-past .sub{color:rgba(155,155,155,.2)}
 .tr-e.is-new .kw,.tr-e.is-new .no,.tr-e.is-new .no:before,.tr-e.is-new .sub{color:var(--cy2)}
-.tr-e.is-new{text-shadow:0 0 6px rgba(92,196,196,.9),0 0 18px rgba(92,196,196,.5);animation:cy-rgb 2.4s steps(1) infinite}
-@keyframes cy-rgb{0%,100%{transform:none}91%{transform:translateX(2px);text-shadow:-2px 0 rgba(255,74,61,.8),2px 0 rgba(92,196,196,.9)}93%{transform:translateX(-1px);text-shadow:1px 0 rgba(255,74,61,.7),-1px 0 rgba(92,196,196,.9)}95%{transform:none}}
-.tr-e.is-new .kw:before{background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,0) 55%),rgba(92,196,196,.16);border-color:rgba(160,235,230,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.tr-e.is-new{text-shadow:0 0 6px rgba(174,174,174,.9),0 0 18px rgba(174,174,174,.5);animation:cy-rgb 2.4s steps(1) infinite}
+@keyframes cy-rgb{0%,100%{transform:none}91%{transform:translateX(2px);text-shadow:-2px 0 rgba(255,74,61,.8),2px 0 rgba(174,174,174,.9)}93%{transform:translateX(-1px);text-shadow:1px 0 rgba(255,74,61,.7),-1px 0 rgba(174,174,174,.9)}95%{transform:none}}
+.tr-e.is-new .kw:before{background:linear-gradient(135deg,rgba(255,255,255,.18) 0%,rgba(255,255,255,0) 55%),rgba(174,174,174,.16);border-color:rgba(219,219,219,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
 
 /* search bar on the dark sheet */
-.tr-search{background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,0) 50%,rgba(255,255,255,.03) 100%),rgba(120,200,200,.05);border-color:rgba(160,230,226,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 0 24px rgba(92,196,196,.12);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
-.ts-txt{text-shadow:0 0 6px rgba(150,235,230,.8),0 0 16px rgba(92,196,196,.4)}
+.tr-search{background:linear-gradient(135deg,rgba(255,255,255,.07) 0%,rgba(255,255,255,0) 50%,rgba(255,255,255,.03) 100%),rgba(183,183,183,.05);border-color:rgba(215,215,215,.32);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 0 24px rgba(174,174,174,.12);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+.ts-txt{text-shadow:0 0 6px rgba(217,217,217,.8),0 0 16px rgba(174,174,174,.4)}
 .ts-caret{background:var(--cy2);box-shadow:0 0 6px var(--cy)}
-.ts-ic svg{filter:drop-shadow(0 0 4px rgba(92,196,196,.7))}
+.ts-ic svg{filter:drop-shadow(0 0 4px rgba(174,174,174,.7))}
 .tr-search.is-glitch .ts-txt{animation:cy-glitch .32s steps(2) 1}
-@keyframes cy-glitch{0%{transform:translateX(0);text-shadow:-3px 0 rgba(255,74,61,.9),3px 0 rgba(92,196,196,.9);clip-path:inset(0 0 55% 0)}33%{transform:translateX(4px);clip-path:inset(40% 0 0 0)}66%{transform:translateX(-3px);text-shadow:2px 0 rgba(255,74,61,.9),-2px 0 rgba(92,196,196,.9);clip-path:inset(20% 0 30% 0)}100%{transform:none;clip-path:none}}
+@keyframes cy-glitch{0%{transform:translateX(0);text-shadow:-3px 0 rgba(255,74,61,.9),3px 0 rgba(174,174,174,.9);clip-path:inset(0 0 55% 0)}33%{transform:translateX(4px);clip-path:inset(40% 0 0 0)}66%{transform:translateX(-3px);text-shadow:2px 0 rgba(255,74,61,.9),-2px 0 rgba(174,174,174,.9);clip-path:inset(20% 0 30% 0)}100%{transform:none;clip-path:none}}
 
 /* HUD frame around the search bar */
-.tr-hud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;pointer-events:none;width:calc(min(440px,100vw - 48px) + 44px);height:calc(clamp(40px,4.8vh,48px) + 40px);font-family:"VT323",ui-monospace,monospace;font-size:13px;letter-spacing:.08em;color:rgba(160,225,222,.7);text-shadow:0 0 4px rgba(92,196,196,.6)}
-.tr-hud .c{position:absolute;width:12px;height:12px;border:1px solid rgba(160,235,230,.75);box-shadow:0 0 6px rgba(92,196,196,.5)}
+.tr-hud{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:3;pointer-events:none;width:calc(min(440px,100vw - 48px) + 44px);height:calc(clamp(40px,4.8vh,48px) + 40px);font-family:"VT323",ui-monospace,monospace;font-size:13px;letter-spacing:.08em;color:rgba(211,211,211,.7);text-shadow:0 0 4px rgba(174,174,174,.6)}
+.tr-hud .c{position:absolute;width:12px;height:12px;border:1px solid rgba(219,219,219,.75);box-shadow:0 0 6px rgba(174,174,174,.5)}
 .tr-hud .tl{left:0;top:0;border-right:0;border-bottom:0}.tr-hud .tr{right:0;top:0;border-left:0;border-bottom:0}
 .tr-hud .bl{left:0;bottom:0;border-right:0;border-top:0}.tr-hud .br{right:0;bottom:0;border-left:0;border-top:0}
 .tr-hud .hd{position:absolute;white-space:nowrap}
 .tr-hud .hd-a{left:18px;top:-2px}.tr-hud .hd-a b{color:var(--red);font-weight:400;text-shadow:0 0 6px var(--red);animation:tr-blink2 1s steps(1) infinite}
 .tr-hud .hd-b{right:18px;top:-2px}
-.tr-hud .hd-c{left:18px;bottom:-3px;color:rgba(160,225,222,.45)}
+.tr-hud .hd-c{left:18px;bottom:-3px;color:rgba(211,211,211,.45)}
 .tr-hud .hd-d{right:18px;bottom:-3px}
 .tr-hud .tick{position:absolute;height:1px;background:var(--red);box-shadow:0 0 5px var(--red)}
 .tr-hud .t1{left:-26px;top:50%;width:16px}.tr-hud .t2{right:-34px;top:calc(50% + 6px);width:22px;opacity:.7}
@@ -219,7 +219,7 @@ html.ab-on .ab-win{transform:none}
 @media (prefers-reduced-motion:reduce){.tr-e.is-new,.trend .statement-sticky:after{animation:none}}
 
 /* ═════════ BLUE PHOSPHOR / LAYERED skin ═════════ */
-.trend{--ph:#d9eeff;--phg:rgba(80,150,255,.8);--ln:rgba(120,175,255,.55);--cy:#8fd8ff;--cy2:#bff0ff}
+.trend{--ph:#d9eeff;--phg:rgba(80,150,255,.8);--ln:rgba(120,175,255,.55);--cy:#8fd8ff;--cy2:#e7e7e7}
 .trend .statement-sticky{background:radial-gradient(80% 70% at 50% 50%,rgba(8,22,60,.18) 0%,rgba(4,12,34,.42) 55%,rgba(2,4,12,.75) 100%)}
 /* blue cast over the inverted plans */
 .tr-tint{position:absolute;inset:0;z-index:0;pointer-events:none;background:#3d7bff;mix-blend-mode:multiply;opacity:.55}
@@ -263,7 +263,7 @@ html.ab-on .ab-win{transform:none}
 .tr-e:not(.is-past):not(.is-new) .sub{color:rgba(150,190,255,.6)}
 .tr-e.is-past{color:rgba(110,150,230,.3)}
 .tr-e.is-past .sub{color:rgba(110,150,230,.2)}
-.tr-e.is-new{text-shadow:0 0 6px rgba(140,220,255,.95),0 0 20px rgba(90,170,255,.6)}
+.tr-e.is-new{text-shadow:0 0 6px rgba(206,206,206,.95),0 0 20px rgba(90,170,255,.6)}
 .tr-e.is-new .kw:before{background:linear-gradient(135deg,rgba(255,255,255,.2) 0%,rgba(255,255,255,0) 55%),rgba(120,190,255,.16);border-color:rgba(190,225,255,.4)}
 
 /* search bar = a terminal panel */

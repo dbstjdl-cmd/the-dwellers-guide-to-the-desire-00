@@ -82,9 +82,12 @@
       field.appendChild(glow);
       seed = 29;
       var W = stage.clientWidth, H = stage.clientHeight;
-      var fs = Math.max(11, Math.min(14.5, W * 0.0101));
+      // above the 1110×908 reference, scale text by screen area and add columns, so size and density match the small screen
+      var K = Math.max(1, Math.sqrt(W * H / (1110 * 908)));
+      document.documentElement.style.setProperty('--trk', K.toFixed(4));
+      var fs = K > 1 ? 11.2 * K : Math.max(11, Math.min(14.5, W * 0.0101));
       var lh = fs * 1.02;                                     // one text line
-      var cols = W >= 1100 ? 14 : W >= 700 ? 10 : 6;
+      var cols = W >= 1100 ? Math.max(14, Math.round(14 * (W / 1110) / K)) : W >= 700 ? 10 : 6;
       var gx = parseFloat(getComputedStyle(head).left) || 20;
       var cw = (W - gx * 2) / cols;
       field.style.setProperty('--fs', fs + 'px');
@@ -1086,7 +1089,7 @@ document.addEventListener('click', function (e) {
       var el = els[i];
       if (!el.classList.contains('tr-e') || el.classList.contains('is-drag') || el.classList.contains('is-sink')) continue;
       var s = S(el), tx = 0, ty = 0;
-      if (!reduce) { tx = Math.sin(t * s.sp + s.ph) * s.ax; ty = Math.cos(t * s.sp * 0.8 + s.ph * 1.3) * s.ay; }
+      // idle floating removed — chips stay put (cursor push-away below still works)
       if (el.dataset.plan != null) {
         // distance from the cursor to the chip's edge (where it is drawn now)
         var l = fr.left + (parseFloat(el.style.left) || 0) + s.x, tp = fr.top + (parseFloat(el.style.top) || 0) + s.y;
@@ -1097,8 +1100,12 @@ document.addEventListener('click', function (e) {
           k = k * k * PUSH; tx += dx / d * k; ty += dy / d * k;
         }
       }
-      s.x += (tx - s.x) * 0.1; s.y += (ty - s.y) * 0.1;
-      el.style.transform = 'translate3d(' + s.x.toFixed(1) + 'px,' + s.y.toFixed(1) + 'px,0)';
+      var nx = s.x + (tx - s.x) * 0.1, ny = s.y + (ty - s.y) * 0.1;
+      if (Math.abs(nx) < 0.05 && Math.abs(ny) < 0.05) { nx = 0; ny = 0; }
+      if (Math.abs(nx - s.x) < 0.05 && Math.abs(ny - s.y) < 0.05 && s.done) continue; // nothing moved: skip the style write
+      s.done = Math.abs(nx - s.x) < 0.05 && Math.abs(ny - s.y) < 0.05;
+      s.x = nx; s.y = ny;
+      el.style.transform = (nx || ny) ? 'translate3d(' + nx.toFixed(1) + 'px,' + ny.toFixed(1) + 'px,0)' : '';
     }
   }
   // widths change when a chip turns into its desire — re-measure then

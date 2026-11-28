@@ -4,8 +4,8 @@
 .tdgtd-q{font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:clamp(22px,3.2vw,54px);line-height:1.1;letter-spacing:.2em;text-transform:uppercase;padding-left:.2em;color:var(--ink)}
 .tdgtd-q2{font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-weight:600;font-size:clamp(13px,1.25vw,19px);letter-spacing:.24em;text-transform:none;padding-left:.24em;color:var(--ink)}
 .tdgtd-kicker{font-family:"Inter","Helvetica Neue",Arial,sans-serif;font-weight:700;font-size:clamp(11px,1vw,15px);letter-spacing:.34em;padding-left:.34em}
-.tdgtd-desc{font-family:"Courier Prime","Courier New",monospace;font-weight:400;color:#3f4845}
-.tdgtd-foot{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:400;letter-spacing:.09em;text-transform:none;color:#3f4845}
+.tdgtd-desc{font-family:"Courier Prime","Courier New",monospace;font-weight:400;color:#464646}
+.tdgtd-foot{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:400;letter-spacing:.09em;text-transform:none;color:#464646}
 .tdgtd-logo{filter:none}
 @media (max-width:520px){.tdgtd-q{letter-spacing:.12em;padding-left:.12em}.tdgtd-kicker{font-size:10px;letter-spacing:.2em}}
 
@@ -62,9 +62,9 @@ html:has(.tdgtd-intro.is-gated.over-plan){cursor:pointer} /* only the plan itsel
 
 
 /* ── while the intro is on screen: the artifact's gray paper and About button (html.intro-art-on, set by intro-art.js) ── */
-html.intro-art-on body{background:#cfd0ce;color:#121514}
+html.intro-art-on body{background:#d0d0d0;color:#141414}
 html.intro-art-on body:before,html.intro-art-on body:after{display:none}
-html.intro-art-on .paper-canvas{filter:none;background:#cfd0ce}
+html.intro-art-on .paper-canvas{filter:none;background:#d0d0d0}
 html.intro-art-on .ab-open{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:400;letter-spacing:.1em;border-radius:999px;background:#ececea;border-color:#111;color:#111}
 html.intro-art-on .ab-open:hover{background:#111;color:#ececea}
 
