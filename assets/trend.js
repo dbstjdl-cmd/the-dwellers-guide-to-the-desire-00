@@ -248,12 +248,12 @@
         glow.style.top = (parseFloat(first.el.style.top) + first.el.offsetHeight / 2) + 'px';
       }
       if (!typed) {
-        news.forEach(function (e) { var k = e.el.children[1]; k.dataset.full = k.textContent; k.textContent = ''; e.el.classList.add('is-typing'); });
-        if (sec.classList.contains('is-in')) typeNew();
+        // live keywords show their text from the start (the type-in effect is gone)
       }
     }
     function typeNew() {
-      if (typed) return; typed = true;
+      // type-in effect removed: live keywords simply stay as they are
+      typed = true; news.forEach(function (e) { e.el.classList.remove('is-typing'); }); return;
       news.forEach(function (e, j) {
         var k = e.el.children[1], full = k.dataset.full || k.textContent, n = 0;
         setTimeout(function step() {
@@ -1025,7 +1025,7 @@ document.addEventListener('click', function (e) {
       el.classList.add('is-back'); setTimeout(function () { el.classList.remove('is-back'); }, 600);
     }, 380);
     put(kwOf(el), +el.dataset.plan);
-    if (hint) hint.classList.add('is-done');
+    // (the hint stays — it no longer fades away after the first drop)
   }
   function put(q, plan) {
     clearTimeout(holdT); clearTimeout(typeT);
