@@ -15,13 +15,13 @@
   var css = document.createElement('style');
   css.textContent =
     '.tl-layers{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:visible}' +
-    '.tl-layers .pl{fill:#fff;fill-opacity:.1;stroke:#fff;stroke-width:1.2}' + /* a very faint white face on each disc */
-    '.tl-layers .ln{fill:none;stroke:#fff;stroke-width:1.1;stroke-dasharray:3 2.5;opacity:.65;animation:tl-flow 1.1s linear infinite}' +
+    '.tl-layers .pl{fill:#fff;fill-opacity:.12;stroke:#fff;stroke-width:1.5}' + /* a very faint white face on each disc */
+    '.tl-layers .ln{fill:none;stroke:#fff;stroke-width:1.25;stroke-dasharray:3 2.5;opacity:.85;animation:tl-flow 1.1s linear infinite}' +
     /* dashes flow upward: each stem is drawn bottom → top, so a falling dash offset moves the pattern toward the top */
     '@keyframes tl-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-11}}' +
     '.trend:not(.is-in) .tl-layers .ln,html.is-locked .tl-layers .ln{animation-play-state:paused}' +
     '@media (prefers-reduced-motion:reduce){.tl-layers .ln{animation:none}}' +
-    '.tl-layers .n{fill:#fff;stroke:none;opacity:.85;transform-box:fill-box;transform-origin:center;transition:opacity .35s ease,transform .35s ease}' +
+    '.tl-layers .n{fill:#fff;stroke:none;opacity:1;transform-box:fill-box;transform-origin:center;transition:opacity .35s ease,transform .35s ease}' +
     /* one stem at a time brightens, holds briefly, and settles back */
     '.tl-layers .ln{transition:opacity .35s ease,stroke-width .35s ease}' +
     '.tl-layers .ln.hi{opacity:1;stroke-width:2;stroke-dasharray:6 2;animation-name:tl-flow-hi}' +
