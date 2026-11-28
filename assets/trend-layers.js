@@ -355,11 +355,13 @@
             !(r.right > br.left - 40 && r.left < br.right + 40 && r.bottom > br.top - 60 && r.top < br.bottom + 60);
         });
         if (!chips.length) return;
-        var chip = chips[Math.floor(Math.random() * chips.length)], kw = chip.querySelector('.kw');
-        X = cx0 >= 0 ? cx0 : window.innerWidth / 2; Y = cy0 >= 0 ? cy0 : window.innerHeight * 0.78;
-        fire('pointermove', X, Y);
+        // start from where the cursor already is: take the keyword closest to it (no fetching trip, no jump)
+        X = cx0 >= 0 ? cx0 : window.innerWidth / 2; Y = cy0 >= 0 ? cy0 : window.innerHeight / 2;
+        chips.sort(function (a, b) { var p = centre(a.querySelector('.kw')), q = centre(b.querySelector('.kw')); return Math.hypot(p[0] - X, p[1] - Y) - Math.hypot(q[0] - X, q[1] - Y); });
+        var chip = chips[0], kw = chip.querySelector('.kw');
+        // the cursor stays visible and simply settles onto that nearest keyword, then grabs it
         var c = centre(kw); c[0] += (Math.random() - 0.5) * Math.min(20, kw.offsetWidth * 0.3);
-        await moveTo(c[0], c[1]); await wait(550);                // arrive, a beat to "read" it
+        fire('pointermove', X, Y); await moveTo(c[0], c[1], Math.min(700, 250 + Math.hypot(c[0] - X, c[1] - Y) * 1.2)); await wait(450);
         fire('pointerdown', X, Y, { down: true }); await wait(280);
         await moveTo(X + 8, Y - 6, 240, true);                    // small lift before carrying it off
         var b = centre(bar); await moveTo(b[0] - br.width * 0.12, b[1] + 2, null, true); await wait(320);
