@@ -957,7 +957,8 @@ document.addEventListener('click', function (e) {
     var v = (-r.top - vh) / (vh * 3);
     field.querySelectorAll(':scope > .tr-e[data-plan]').forEach(function (el) {
       var at = parseFloat(el.dataset.at); if (isNaN(at)) return;
-      setState(el, v > at - lead(el) && !el.classList.contains('is-gone'));
+      // scroll no longer turns keywords into their desire sentence — they stay as search keywords
+      if (el.classList.contains('is-desire')) setState(el, false);
     });
   }
   function kick() { if (!raf) raf = requestAnimationFrame(tick); }
