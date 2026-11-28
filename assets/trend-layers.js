@@ -21,9 +21,9 @@
     '@keyframes tl-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-11}}' +
     '.trend:not(.is-in) .tl-layers .ln,html.is-locked .tl-layers .ln{animation-play-state:paused}' +
     '@media (prefers-reduced-motion:reduce){.tl-layers .ln{animation:none}}' +
-    '.tl-layers .n{fill:#fff;stroke:none;opacity:1;transform-box:fill-box;transform-origin:center;transition:opacity .35s ease,transform .35s ease}' +
+    '.tl-layers .n{fill:#fff;stroke:none;opacity:1;transform-box:fill-box;transform-origin:center;transition:none}' +
     /* one stem at a time brightens, holds briefly, and settles back */
-    '.tl-layers .ln{transition:opacity .35s ease,stroke-width .35s ease}' +
+    '.tl-layers .ln{transition:none}' +   /* lights up instantly when a keyword is near */
     '.tl-layers .ln.hi{opacity:1;stroke-width:2;stroke-dasharray:6 2;animation-name:tl-flow-hi}' +
     '@keyframes tl-flow-hi{from{stroke-dashoffset:0}to{stroke-dashoffset:-16}}' +
     '.tl-layers .n.hi{opacity:1;transform:scale(1.18);stroke:#fff;stroke-width:.6}' +   /* lit nodes grow a little, still open rings */
@@ -37,7 +37,7 @@
     '.tl-halftone.on{opacity:1}' +
     'html.tl-demo-hide .cursor{opacity:0!important;transition:opacity .15s}' +
     'html .cursor{transition:opacity .15s}' +
-    '.tl-lift{position:absolute;inset:0;z-index:0;pointer-events:none;background:#fff;opacity:.36}' +
+    '.tl-lift{position:absolute;inset:0;z-index:0;pointer-events:none;background:#fff;opacity:.29}' +
     '.tl-veil{position:absolute;inset:0;z-index:0;pointer-events:none;background:#000;opacity:0;transition:opacity .9s ease}' +
     '.statement-sticky.tl-dim .tl-veil{opacity:.07}' +
     'html.is-locked .tl-veil{opacity:0}' +
@@ -203,6 +203,16 @@
   var veil = document.createElement('div'); veil.className = 'tl-veil'; veil.setAttribute('aria-hidden', 'true'); stk.insertBefore(veil, ht);
   // this screen sits a touch lighter than the rest of the site
   var lift = document.createElement('div'); lift.className = 'tl-lift'; lift.setAttribute('aria-hidden', 'true'); stk.insertBefore(lift, stk.firstChild);
+  /* softer grain while the search screen fills the view */
+  (function () {
+    var g = document.createElement('style');
+    g.textContent = 'html body:after{transition:opacity .6s ease}html.tl-in body:after{opacity:.6!important}';
+    document.head.appendChild(g);
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { document.documentElement.classList.toggle('tl-in', e.isIntersecting && e.intersectionRatio > 0.5); });
+    }, { threshold: [0, 0.5, 1] });
+    io.observe(stk);
+  })();
   var htPlan = -1, htImg = null;
   function halftone() {
     var W = stk.clientWidth, H = stk.clientHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
