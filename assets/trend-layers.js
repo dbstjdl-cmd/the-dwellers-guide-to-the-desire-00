@@ -149,7 +149,7 @@
     });
   }
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var SPEED = Math.PI * 2 / 240000, last = 0, acc = 0;           // one turn every 4 minutes
+  var SPEED = Math.PI * 2 / 180000, last = 0, acc = 0;           // one turn every 3 minutes
   function spin(now) {
     requestAnimationFrame(spin);
     var dt = last ? Math.min(100, now - last) : 0; last = now;
