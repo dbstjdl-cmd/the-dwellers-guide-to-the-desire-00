@@ -1090,7 +1090,7 @@ document.addEventListener('click', function (e) {
   var sec = document.getElementById('essay'); if (!sec) return;
   var field = sec.querySelector('.tr-field'); if (!field) return;
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var mx = -1e4, my = -1e4, R = 120, PUSH = 30, st = new WeakMap();
+  var mx = -1e4, my = -1e4, R = 90, PUSH = 12,  /* gentler push-away: shorter reach, less travel */ st = new WeakMap();
   window.addEventListener('pointermove', function (e) { if (e.pointerType !== 'touch') { mx = e.clientX; my = e.clientY; } }, { passive: true });
   document.addEventListener('pointerleave', function () { mx = my = -1e4; });
   function S(el) {

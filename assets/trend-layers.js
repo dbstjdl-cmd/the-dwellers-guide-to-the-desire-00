@@ -15,13 +15,18 @@
   var css = document.createElement('style');
   css.textContent =
     '.tl-layers{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:visible}' +
-    '.tl-layers .pl{fill:#fff;fill-opacity:.08;stroke:#fff;stroke-width:1.2}' + /* a very faint white face on each disc */
+    '.tl-layers .pl{fill:#fff;fill-opacity:.1;stroke:#fff;stroke-width:1.2}' + /* a very faint white face on each disc */
     '.tl-layers .ln{fill:none;stroke:#fff;stroke-width:1.1;stroke-dasharray:3 2.5;opacity:.65;animation:tl-flow 1.1s linear infinite}' +
     /* dashes flow upward: each stem is drawn bottom → top, so a falling dash offset moves the pattern toward the top */
     '@keyframes tl-flow{from{stroke-dashoffset:0}to{stroke-dashoffset:-11}}' +
     '.trend:not(.is-in) .tl-layers .ln,html.is-locked .tl-layers .ln{animation-play-state:paused}' +
     '@media (prefers-reduced-motion:reduce){.tl-layers .ln{animation:none}}' +
-    '.tl-layers .n{fill:#fff;stroke:none}' +
+    '.tl-layers .n{fill:#fff;stroke:none;opacity:.85;transform-box:fill-box;transform-origin:center;transition:opacity .35s ease,transform .35s ease}' +
+    /* one stem at a time brightens, holds briefly, and settles back */
+    '.tl-layers .ln{transition:opacity .35s ease,stroke-width .35s ease}' +
+    '.tl-layers .ln.hi{opacity:1;stroke-width:2;stroke-dasharray:6 2;animation-name:tl-flow-hi}' +
+    '@keyframes tl-flow-hi{from{stroke-dashoffset:0}to{stroke-dashoffset:-16}}' +
+    '.tl-layers .n.hi{opacity:1;transform:scale(1.18);stroke:#fff;stroke-width:.6}' +   /* lit nodes grow a little, still open rings */
     '.tl-layers .lb{fill:#fff;font-family:"Departure Mono",ui-monospace,monospace;font-weight:400;letter-spacing:.16em}' +
     '.tl-layers .lb-no{fill:#fff;fill-opacity:.6}' +
     '.tl-layers .lb-ln{fill:none;stroke:#fff;stroke-width:1}' +
@@ -30,6 +35,12 @@
     /* searched plan, shown behind the chips as white halftone dots; the diagram fades back meanwhile */
     '.tl-halftone{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:0;transition:opacity .9s ease}' +
     '.tl-halftone.on{opacity:1}' +
+    'html.tl-demo-hide .cursor{opacity:0!important;transition:opacity .15s}' +
+    'html .cursor{transition:opacity .15s}' +
+    '.tl-lift{position:absolute;inset:0;z-index:0;pointer-events:none;background:#fff;opacity:.36}' +
+    '.tl-veil{position:absolute;inset:0;z-index:0;pointer-events:none;background:#000;opacity:0;transition:opacity .9s ease}' +
+    '.statement-sticky.tl-dim .tl-veil{opacity:.07}' +
+    'html.is-locked .tl-veil{opacity:0}' +
     '.tl-layers{transition:opacity .9s ease}' +
     '.statement-sticky.tl-dim .tl-layers{opacity:.22}' +
     'html.is-locked .tl-halftone{opacity:0}' +
@@ -151,9 +162,47 @@
   }
   requestAnimationFrame(spin);
 
+  // highlight: hovering a keyword chip lights one stem, picked at random but never the one lit just before
+  var hiLast = -1, hiOn = null, hiChip = null;
+  function hiOff() {
+    if (!hiOn) return;
+    hiOn.pl.classList.remove('hi'); hiOn.rs.forEach(function (r) { r.classList.remove('hi'); }); hiOn = null;
+  }
+  function hiPick() {
+    if (!els.length) return;
+    var i; do { i = Math.floor(Math.random() * els.length); } while (els.length > 1 && i === hiLast);
+    hiLast = i; hiOn = els[i];
+    hiOn.pl.classList.add('hi'); hiOn.rs.forEach(function (r) { r.classList.add('hi'); });
+  }
+  // a keyword counts as hovered when the cursor is on it or near it (within ~70px of its box)
+  var nearRaf = 0, px = -1e4, py = -1e4;
+  function nearest() {
+    nearRaf = 0;
+    if (document.documentElement.classList.contains('is-locked')) { if (hiChip) { hiChip = null; hiOff(); } return; }
+    var R = 70 * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--trk')) || 1), best = null, bd = R;
+    field.querySelectorAll(':scope > .tr-e:not(.is-gone)').forEach(function (el) {
+      var r = el.getBoundingClientRect(); if (!r.width) return;
+      var dx = px < r.left ? r.left - px : px > r.right ? px - r.right : 0;
+      var dy = py < r.top ? r.top - py : py > r.bottom ? py - r.bottom : 0;
+      var d = Math.hypot(dx, dy); if (d <= bd) { bd = d; best = el; }
+    });
+    if (best === hiChip) return;
+    hiChip = best; hiOff(); if (best) hiPick();
+  }
+  window.addEventListener('pointermove', function (e) {
+    px = e.clientX; py = e.clientY;
+    var r = stk.getBoundingClientRect(); if (r.bottom < 0 || r.top > window.innerHeight) return;
+    if (!nearRaf) nearRaf = requestAnimationFrame(nearest);
+  }, { passive: true });
+  document.addEventListener('pointerleave', function () { if (hiChip) { hiChip = null; hiOff(); } });
+
   // ── searched plan as a white halftone ──
   var ht = document.createElement('canvas'); ht.className = 'tl-halftone'; ht.setAttribute('aria-hidden', 'true');
   stk.insertBefore(ht, field);
+  // a faint dark veil behind the halftone while a plan is shown, so the white dots read more clearly
+  var veil = document.createElement('div'); veil.className = 'tl-veil'; veil.setAttribute('aria-hidden', 'true'); stk.insertBefore(veil, ht);
+  // this screen sits a touch lighter than the rest of the site
+  var lift = document.createElement('div'); lift.className = 'tl-lift'; lift.setAttribute('aria-hidden', 'true'); stk.insertBefore(lift, stk.firstChild);
   var htPlan = -1, htImg = null;
   function halftone() {
     var W = stk.clientWidth, H = stk.clientHeight, dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -248,6 +297,101 @@
   window.addEventListener('wheel', hold, { passive: false });
   window.addEventListener('touchmove', hold, { passive: false });
   window.addEventListener('keydown', function (e) { if (gliding && ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'End', 'Home', ' '].indexOf(e.key) >= 0) e.preventDefault(); });
+
+  // ── first visit to this screen: a one-time demo — the cursor picks a random keyword, drags it into the
+  //    search bar, presses search, lets the plan surface, then clicks the background to come back.
+  //    Real mouse/keyboard input is held off while it runs. ──
+  (function () {
+    var coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
+    if (coarse) return;
+    var done = false, running = false, userTouched = false, cx0 = -1, cy0 = -1;
+    field.addEventListener('pointerdown', function (e) { if (e.isTrusted) userTouched = true; }, true);
+    window.addEventListener('pointermove', function (e) { if (e.isTrusted) { cx0 = e.clientX; cy0 = e.clientY; } }, { passive: true });
+    var BLOCK = ['pointerdown', 'pointerup', 'pointermove', 'mousedown', 'mouseup', 'mousemove', 'click', 'dblclick', 'contextmenu', 'wheel', 'keydown', 'touchstart', 'touchmove'];
+    function block(e) { if (running && e.isTrusted) { e.stopImmediatePropagation(); if (e.cancelable) e.preventDefault(); } }
+    BLOCK.forEach(function (t) { window.addEventListener(t, block, { capture: true, passive: false }); });
+
+    var X = -1, Y = -1, PID = 77;
+    var lastT = null;
+    function fire(type, x, y, extra) {
+      var t = document.elementFromPoint(x, y) || document.body;
+      if (t !== lastT) {                                          // hover in/out like a real pointer (cursor tags, ring state)
+        var ov = { bubbles: true, composed: true, clientX: x, clientY: y, pointerId: PID, pointerType: 'mouse', isPrimary: true, relatedTarget: lastT };
+        if (lastT) lastT.dispatchEvent(new PointerEvent('pointerout', Object.assign({}, ov, { relatedTarget: t })));
+        t.dispatchEvent(new PointerEvent('pointerover', ov)); lastT = t;
+      }
+      var o = { bubbles: true, cancelable: true, composed: true, clientX: x, clientY: y, pointerId: PID, pointerType: 'mouse', isPrimary: true, button: 0, buttons: type === 'pointerup' ? 0 : (extra && extra.down ? 1 : 0) };
+      t.dispatchEvent(new PointerEvent(type, o));
+      if (type === 'pointermove') t.dispatchEvent(new MouseEvent('mousemove', o));
+      return t;
+    }
+    // hand-like moves: a gentle arc (not a ruler line), a bell-shaped speed curve, duration from distance
+    function moveTo(x, y, ms, down) {
+      return new Promise(function (res) {
+        var x1 = X, y1 = Y, dx = x - x1, dy = y - y1, dist = Math.hypot(dx, dy) || 1, t0 = performance.now();
+        var dur = ms || Math.min(1900, 650 + dist * 1.1);             // unhurried: ~1.2–1.9s for the usual distances
+        var bend = (Math.random() < 0.5 ? -1 : 1) * Math.min(90, dist * (0.08 + Math.random() * 0.08));
+        var qx = x1 + dx / 2 - dy / dist * bend, qy = y1 + dy / 2 + dx / dist * bend;   // control point off to one side
+        (function step(now) {
+          var k = Math.min(1, (now - t0) / dur), e = -(Math.cos(Math.PI * k) - 1) / 2, u = 1 - e;   // sine in-out: no sharp burst of speed
+          X = u * u * x1 + 2 * u * e * qx + e * e * x; Y = u * u * y1 + 2 * u * e * qy + e * e * y;
+          fire('pointermove', X, Y, { down: down });
+          if (k < 1) requestAnimationFrame(step); else res();
+        })(t0);
+      });
+    }
+    function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+    function hide(on) { document.documentElement.classList.toggle('tl-demo-hide', on); }
+    function centre(el) { var r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }
+
+    async function run() {
+      running = true; document.documentElement.classList.add('tl-demo');
+      try {
+        var bar = sec.querySelector('.tr-search'), ic = sec.querySelector('.ts-ic'); if (!bar) return;
+        var br = bar.getBoundingClientRect();
+        var chips = [].slice.call(field.querySelectorAll(':scope > .tr-e[data-plan]:not(.is-gone)')).filter(function (el) {
+          var r = el.getBoundingClientRect(), k = el.querySelector('.kw');
+          return r.width && r.top > 60 && r.bottom < window.innerHeight - 80 && k && k.textContent.trim().length > 1 &&
+            !(r.right > br.left - 40 && r.left < br.right + 40 && r.bottom > br.top - 60 && r.top < br.bottom + 60);
+        });
+        if (!chips.length) return;
+        var chip = chips[Math.floor(Math.random() * chips.length)], kw = chip.querySelector('.kw');
+        X = cx0 >= 0 ? cx0 : window.innerWidth / 2; Y = cy0 >= 0 ? cy0 : window.innerHeight * 0.78;
+        fire('pointermove', X, Y);
+        var c = centre(kw); c[0] += (Math.random() - 0.5) * Math.min(20, kw.offsetWidth * 0.3);
+        await moveTo(c[0], c[1]); await wait(550);                // arrive, a beat to "read" it
+        fire('pointerdown', X, Y, { down: true }); await wait(280);
+        await moveTo(X + 8, Y - 6, 240, true);                    // small lift before carrying it off
+        var b = centre(bar); await moveTo(b[0] - br.width * 0.12, b[1] + 2, null, true); await wait(320);
+        fire('pointerup', X, Y);
+        await wait(300); hide(true);                              // the cursor leaves the scene after the drop
+        await wait(1900);                                         // query types in, then turns into its desire
+        if (ic) {                                                 // reappears only for the search click
+          var s = centre(ic); X = s[0]; Y = s[1]; fire('pointermove', X, Y); await wait(500);   // let the site cursor settle there while hidden
+          hide(false); await wait(380);
+          ic.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, clientX: X, clientY: Y }));
+          await wait(420); hide(true);
+        }
+        await wait(2300);                                         // the plan surfaces
+        X = window.innerWidth * 0.5; Y = window.innerHeight * 0.86; fire('pointermove', X, Y); await wait(80);
+        document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, clientX: X, clientY: Y }));   // unseen click on the background
+        await wait(900);
+      } finally {
+        running = false; document.documentElement.classList.remove('tl-demo');
+        // the cursor stays hidden until the visitor moves their own mouse
+        window.addEventListener('pointermove', function show(e) { if (!e.isTrusted) return; hide(false); window.removeEventListener('pointermove', show, true); }, true);
+      }
+    }
+    // start once the screen has fully arrived (sticky in place, chips shown), only the first time
+    var poll = setInterval(function () {
+      if (done) return clearInterval(poll);
+      if (document.documentElement.classList.contains('is-locked') || document.hidden) return;
+      if (!sec.classList.contains('is-in')) return;
+      var r = stk.getBoundingClientRect(); if (Math.abs(r.top) > 2) return;
+      done = true; clearInterval(poll);
+      setTimeout(function () { if (!userTouched && !document.documentElement.classList.contains('is-locked')) run(); }, 900);
+    }, 250);
+  })();
 
   var rt = 0;
   window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { draw(); if (htPlan >= 0) halftone(); }, 150); });
