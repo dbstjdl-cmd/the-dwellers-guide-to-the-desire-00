@@ -223,8 +223,31 @@
     // land where the archive has fully taken over (it overlaps the end of this screen): 1.5 screens past its top edge
     var cloud = document.getElementById('cloud'), top = cloud ? cloud.getBoundingClientRect().top + window.scrollY + window.innerHeight * 1.5 : endY() + window.innerHeight * 3;
     if (window.__tsRelease) window.__tsRelease();
-    window.scrollTo({ top: top, behavior: 'smooth' });
+    glide(top);
   });
+  // a slow, scroll-like glide down: keywords fall away one by one as they do when scrolling, then the archive takes over
+  var glideId = 0;
+  function glide(to) {
+    var from = window.scrollY, dist = to - from, id = ++glideId;
+    if (Math.abs(dist) < 2) return;
+    var dur = Math.min(6200, Math.max(4500, Math.abs(dist) * 1.0 + 2000)), t0 = performance.now();   // about 5.5s for the usual distance
+    gliding = true;                                                // runs to the end; scroll input is held off meanwhile
+    (function step(now) {
+      if (id !== glideId) return;
+      // steady speed with only a soft start and stop (first/last 12%), so keywords fall away at an even pace
+      var k = Math.min(1, (now - t0) / dur), a = 0.12, v = 1 / (1 - a), e;
+      if (k < a) e = v * k * k / (2 * a);
+      else if (k > 1 - a) e = 1 - v * (1 - k) * (1 - k) / (2 * a);
+      else e = v * (k - a / 2);
+      window.scrollTo(0, from + dist * e);
+      if (k < 1) requestAnimationFrame(step); else gliding = false;
+    })(t0);
+  }
+  var gliding = false;
+  function hold(e) { if (gliding) e.preventDefault(); }
+  window.addEventListener('wheel', hold, { passive: false });
+  window.addEventListener('touchmove', hold, { passive: false });
+  window.addEventListener('keydown', function (e) { if (gliding && ['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'End', 'Home', ' '].indexOf(e.key) >= 0) e.preventDefault(); });
 
   var rt = 0;
   window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { draw(); if (htPlan >= 0) halftone(); }, 150); });

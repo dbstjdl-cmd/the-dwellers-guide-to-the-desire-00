@@ -1066,13 +1066,12 @@ document.addEventListener('click', function (e) {
   window.__tsRelease = function () { release(); };
   function go() {
     if (heldPlan < 0 || !bar.classList.contains('is-filled')) return;
-    // first search: the plan surfaces behind the chips as a white halftone (diagram fades back); search again to open it
+    // search: the plan surfaces behind the chips as a white halftone (diagram fades back).
+    // Searching again does nothing more — the plan's detail sheet is not opened from here.
     if (window.__tlShowPlan && shownPlan !== heldPlan) {
       shownPlan = heldPlan; window.__tlShowPlan(heldPlan);
-      clearTimeout(holdT); holdT = setTimeout(release, 25000); return;
+      clearTimeout(holdT); holdT = setTimeout(release, 25000);
     }
-    var i = heldPlan; release();
-    if (typeof window.__openPlan === 'function') { document.documentElement.dataset.from = 'trend'; window.__openPlan(i); }
   }
   if (ic) ic.addEventListener('click', go);
   // while a plan is shown as halftone, one click on the empty background puts it away
