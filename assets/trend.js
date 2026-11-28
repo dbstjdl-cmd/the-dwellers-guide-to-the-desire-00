@@ -85,8 +85,10 @@
       // above the 1110×908 reference, scale text by screen area and add columns, so size and density match the small screen
       var K = Math.max(1, Math.sqrt(W * H / (1110 * 908)));
       document.documentElement.style.setProperty('--trk', K.toFixed(4));
-      var fs = K > 1 ? 11.2 * K : Math.max(11, Math.min(14.5, W * 0.0101));
-      var lh = fs * 1.02;                                     // one text line
+      var SZ = 0.85; // chips drawn at 85% of the layout size: smaller type, same amount and spacing
+      var fsL = (K > 1 ? 11.2 * K : Math.max(11, Math.min(14.5, W * 0.0101))) * 1.18; // size the layout is spaced for
+      var fs = fsL * SZ;                                      // size the chips are drawn at
+      var lh = fsL * 1.02;                                    // one text line (layout)
       var cols = W >= 1100 ? Math.max(14, Math.round(14 * (W / 1110) / K)) : W >= 700 ? 10 : 6;
       var gx = parseFloat(getComputedStyle(head).left) || 20;
       var cw = (W - gx * 2) / cols;
@@ -107,7 +109,7 @@
         var el = make(qi, past);
         var x = gx + c * cw, w = el.offsetWidth, h = el.offsetHeight;
         if (x + w > W - gx || y + h > y1 + lh) { el.remove(); return 0; }
-        var r = { x: x, y: y, w: w, h: h }, m = fs * 1.4;
+        var r = { x: x, y: y, w: w / SZ, h: h / SZ }, m = fsL * 1.4;
         for (var p = 0; p < placed.length; p++) { var o = placed[p]; if (past && o.liveOnly) continue; if (r.x < o.x + o.w + m && r.x + r.w + m > o.x && r.y < o.y + o.h + 1 && r.y + r.h + 1 > o.y) { el.remove(); return 0; } }
         if (past) pn++; else qn++;
         el.style.left = x + 'px'; el.style.top = y + 'px';
@@ -127,9 +129,9 @@
         while (y < y1) {
           if (rnd() < 0.2) ind = 0; else ind = Math.max(0, Math.min(laneW - 2, ind + Math.round(rr(-1.3, 1.3))));
           var h1 = tryPlace(ln[0] + ind, y, false), h2 = 0;
-          if (rnd() < 0.42) h2 = tryPlace(ln[0] + ind + Math.round(rr(2, laneW)), y, false);
-          var rowH = Math.max(h1, h2) || lh * 2;
-          y += rowH + (rnd() < 0.2 ? lh * rr(1.6, 3) : lh * rr(0.6, 1.2));
+          if (rnd() < 0.18) h2 = tryPlace(ln[0] + ind + Math.round(rr(2, laneW)), y, false); // fewer side-by-side pairs
+          var rowH = Math.max(h1, h2) / SZ || lh * 2;
+          y += rowH + (rnd() < 0.35 ? lh * rr(3, 5) : lh * rr(1.6, 2.6)); // more air between rows
         }
       });
       // past searches fill whatever space is left, snapped to the same grid
@@ -976,7 +978,7 @@ document.addEventListener('click', function (e) {
   var drag = null, justDragged = false, holdT = 0, heldPlan = -1, typeT = 0;
   // hint under the bar, and a cursor tag that says the chips can be picked up
   var hint = sec.querySelector('.tr-hud .hd-c'), coarse = window.matchMedia && matchMedia('(pointer: coarse)').matches;
-  if (hint && !coarse) { hint.textContent = '검색어를 끌어 여기에 놓아 보세요 · DRAG A QUERY HERE'; hint.classList.add('hd-hint'); }
+  if (hint && !coarse) { hint.textContent = 'DRAG A QUERY HERE'; hint.classList.add('hd-hint'); }
   field.addEventListener('pointerover', function (e) { var el = e.target.closest && e.target.closest('.tr-e[data-plan]'); if (el && !coarse) el.dataset.cursor = 'DRAG ✥'; });
   function kwOf(el) { var k = el.querySelector('.kw'); return (el.dataset.kw0 || (k && k.textContent) || '').trim(); }
   function overBar(x, y) { var r = bar.getBoundingClientRect(), m = 24; return x > r.left - m && x < r.right + m && y > r.top - m && y < r.bottom + m; }
