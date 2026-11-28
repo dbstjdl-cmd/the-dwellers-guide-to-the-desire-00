@@ -372,7 +372,7 @@
           ic.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, clientX: X, clientY: Y }));
           await wait(420); hide(true);
         }
-        await wait(2300);                                         // the plan surfaces
+        await wait(3200);                                         // the plan surfaces — let it sit a moment
         X = window.innerWidth * 0.5; Y = window.innerHeight * 0.86; fire('pointermove', X, Y); await wait(80);
         document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, clientX: X, clientY: Y }));   // unseen click on the background
         await wait(900);
