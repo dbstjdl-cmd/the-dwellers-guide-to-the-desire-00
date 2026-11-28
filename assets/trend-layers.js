@@ -160,20 +160,18 @@
     if (bx1 < 0) { bx0 = 0; by0 = 0; bx1 = P - 1; by1 = P - 1; }
     var sx = bx0 / P * iw, sy = by0 / P * ih, sw = (bx1 - bx0 + 1) / P * iw, sh = (by1 - by0 + 1) / P * ih;
     var k = Math.min(W * 0.62 / sw, H * 0.72 / sh), DW = sw * k, DH = sh * k;  // drawing size on screen, with air around it
-    var g = Math.max(4.5, Math.min(DW, DH) / 110);                              // pixel pitch
+    var g = Math.max(4.2, Math.min(DW, DH) / 120);                              // dot pitch
     var nx = Math.round(DW / g), ny = Math.round(DH / g);
     var sm = document.createElement('canvas'); sm.width = nx; sm.height = ny;
     var sc = sm.getContext('2d'); sc.fillStyle = '#fff'; sc.fillRect(0, 0, nx, ny); sc.drawImage(htImg, sx, sy, sw, sh, 0, 0, nx, ny);
-    var d = sc.getImageData(0, 0, nx, ny).data, x0 = Math.round((W - nx * g) / 2), y0 = Math.round((H - ny * g) / 2);
-    // square-pixel halftone: same-size squares switched on/off by an ordered (Bayer 4×4) dither (no grid)
-    var B = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
+    var d = sc.getImageData(0, 0, nx, ny).data, x0 = (W - nx * g) / 2, y0 = (H - ny * g) / 2;
     c.fillStyle = '#fff'; c.beginPath();
-    var q = Math.max(2, g - 1);                                                  // square size, a hair of gap between pixels
     for (var y = 0; y < ny; y++) for (var x = 0; x < nx; x++) {
       var o = (y * nx + x) * 4, dark = 1 - (d[o] * 0.299 + d[o + 1] * 0.587 + d[o + 2] * 0.114) / 255;
-      if (dark < 0.05) continue;                                                 // paper stays empty
-      if (Math.min(1, dark * 1.6) * 16 <= B[(y & 3) * 4 + (x & 3)] + 0.5) continue;
-      c.rect(Math.round(x0 + x * g + (g - q) / 2), Math.round(y0 + y * g + (g - q) / 2), Math.round(q), Math.round(q));
+      if (dark < 0.06) continue;                                   // paper stays empty
+      var r = g * 0.5 * Math.min(1, Math.sqrt(dark) * 1.15);
+      var cx = x0 + (x + 0.5) * g, cy = y0 + (y + 0.5) * g;
+      c.moveTo(cx + r, cy); c.arc(cx, cy, r, 0, 6.2832);
     }
     c.fill();
   }
